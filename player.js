@@ -26,7 +26,7 @@ function expire() {
 // Older links were produced on the original Los Angeles recorder and contain no zone.
 function captureInstant(path, zone, signedAt) {
   const name = decodeURIComponent(path.split('/').pop());
-  const match = /^Framecho_(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})-(\d{2})/.exec(name);
+  const match = /^(?:Framecho|jiejie)_(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})-(\d{2})/.exec(name);
   if (!match) return null;
   const [year, month, day, hour, minute, second] = match.slice(1).map(Number);
   const wall = Date.UTC(year, month - 1, day, hour, minute, second);
@@ -67,9 +67,10 @@ function setRecordingInfo(parameters, signedAt) {
 }
 function signedURL(params) {
   if (params.has('v')) return params.get('v');
-  const path = params.get('p'), id = params.get('k'), date = params.get('d');
+  const modern = params.has('j');
+  const path = params.get(modern ? 'j' : 'p'), id = params.get('k'), date = params.get('d');
   if (!path || !id || !date) throw Error();
-  const url = new URL('https://' + expectedHost + '/framecho/' + path);
+  const url = new URL('https://' + expectedHost + (modern ? '/jiejie/' : '/framecho/') + path);
   url.search = new URLSearchParams({
     'X-Amz-Algorithm':'AWS4-HMAC-SHA256',
     'X-Amz-Credential':id+'/'+date.slice(0,8)+'/ap-guangzhou/s3/aws4_request',
@@ -87,7 +88,7 @@ function init() {
     if (!raw || raw.length > 12000) throw Error();
     mediaURL = new URL(raw);
     if (mediaURL.origin !== 'https://' + expectedHost || mediaURL.username || mediaURL.password ||
-        !mediaURL.pathname.startsWith('/framecho/') || !/\.(mov|mp4|m4v|webm)$/i.test(mediaURL.pathname) ||
+        !/^\/(?:jiejie|framecho)\//.test(mediaURL.pathname) || !/\.(mov|mp4|m4v|webm)$/i.test(mediaURL.pathname) ||
         !/^[0-9a-f]{64}$/i.test(mediaURL.searchParams.get('X-Amz-Signature') || '')) throw Error();
     const date = /^(\d{4})(\d\d)(\d\d)T(\d\d)(\d\d)(\d\d)Z$/.exec(mediaURL.searchParams.get('X-Amz-Date'));
     const ttl = Number(mediaURL.searchParams.get('X-Amz-Expires'));
@@ -132,6 +133,27 @@ function init() {
   };
   video.src = mediaURL.href;
 }
+el('rename').onclick = () => {
+  el('nameInput').value = displayTitle;
+  el('nameDialog').showModal();
+  el('nameInput').select();
+};
+el('cancelName').onclick = () => el('nameDialog').close();
+el('nameForm').onsubmit = event => {
+  event.preventDefault();
+  if (!expires || Date.now() >= expires) { el('nameDialog').close(); expire(); return; }
+  const title = el('nameInput').value.replace(/[\u0000-\u001f\u007f]+/g, ' ').trim();
+  if (!title) { el('nameInput').focus(); return; }
+  const params = new URLSearchParams(location.hash.slice(1));
+  params.set('n', title);
+  history.replaceState(null, '', '#' + params.toString());
+  displayTitle = title;
+  document.title = title;
+  el('title').textContent = title;
+  el('shareLabel').textContent = '复制链接';
+  el('nameDialog').close();
+  el('share').focus();
+};
 el('share').onclick = async () => {
   try {
     await navigator.clipboard.writeText('名称: ' + displayTitle + '\n日期: ' + (beijingTime || '未知') + '\n录屏文件：' + location.href);

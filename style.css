@@ -68,3 +68,15 @@ video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: con
   #play { width: 46px; height: 46px; }
   #play i { border-block-width: 7px; border-left-width: 11px; }
 }
+
+.title-line { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: baseline; }
+#rename { background: transparent; color: #bec0c5; border: 0; font-size: 13px; padding: 5px 0; white-space: nowrap; }
+#rename:hover { color: white; text-decoration: underline; }
+dialog { width: min(90vw, 360px); box-sizing: border-box; padding: 22px; border: 1px solid #515359; border-radius: 12px; background: #232529; color: inherit; }
+dialog::backdrop { background: #0009; }
+dialog form { display: grid; gap: 12px; }
+dialog label { font-size: 20px; font-weight: 600; }
+dialog input { font: inherit; width: 100%; padding: 9px; border-radius: 6px; background: #17191c; border: 1px solid #777; color: inherit; }
+dialog small { color: #bbb; }
+.name-actions { display: flex; justify-content: end; gap: 8px; }
+.name-actions button { padding: 5px 14px; border-radius: 6px; border: 1px solid #686a70; background: #303237; }
