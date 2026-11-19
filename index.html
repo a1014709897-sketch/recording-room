@@ -3,20 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#17191c">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f2f2f1" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#222325" media="(prefers-color-scheme: dark)">
   <meta name="referrer" content="no-referrer">
   <meta name="robots" content="noindex,nofollow,noarchive">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self'; media-src https://framecho-share-1455997977.cos.ap-guangzhou.myqcloud.com; img-src 'self' data:; base-uri 'none'; form-action 'none'">
   <title>录屏</title>
-  <link rel="stylesheet" href="./style.css?v=6">
-  <script src="./player.js?v=6" defer></script>
+  <link rel="stylesheet" href="./style.css?v=7">
+  <script src="./player.js?v=7" defer></script>
 </head>
 <body>
   <main id="viewer">
     <header id="info" hidden>
       <div>
         <div class="title-line"><h1 id="title">屏幕录像</h1><button id="rename" type="button">改标题</button></div>
-        <div id="timestamp" hidden><time id="recorded" aria-label="录制时间"></time> 北京时间</div>
+        <div class="byline"><span class="author"><img src="./avatar.jpg" alt="" width="28" height="28">jiejie</span><div id="timestamp" hidden><time id="recorded" aria-label="录制时间"></time> 北京时间</div></div>
       </div>
       <button id="share" type="button" aria-label="复制名称、日期和录屏链接"><i aria-hidden="true"></i><span id="shareLabel" role="status">复制链接</span></button>
     </header>
