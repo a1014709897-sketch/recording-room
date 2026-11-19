@@ -131,7 +131,12 @@ function init() {
       notice('浏览器未能开始播放', '请重试，或换用 Safari、Chrome 打开。', true);
     }
   };
-  video.src = mediaURL.href;
+  // Browsers can retain media ranges across reloads. COS accepts equivalent
+  // percent encodings of the signature value; the grant and its expiry stay identical.
+  const random = crypto.getRandomValues(new Uint8Array(64));
+  video.src = mediaURL.href.replace(/([?&]X-Amz-Signature=)([a-f0-9]{64})(?=&|$)/i,
+    (_, prefix, signature) => prefix + Array.from(signature, (c, i) =>
+      (random[i] & 1) ? '%' + c.charCodeAt(0).toString(16) : c).join(''));
 }
 el('rename').onclick = () => {
   el('nameInput').value = displayTitle;
