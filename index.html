@@ -3,42 +3,29 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#fafbf8">
+  <meta name="theme-color" content="#fafafa">
   <meta name="referrer" content="no-referrer">
   <meta name="robots" content="noindex,nofollow,noarchive">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self'; media-src https://framecho-share-1455997977.cos.ap-guangzhou.myqcloud.com; img-src 'self' data:; base-uri 'none'; form-action 'none'">
-  <title>杰杰的放映室</title>
-  <link rel="stylesheet" href="./style.css?v=2">
-  <script src="./player.js?v=2" defer></script>
+  <title>录屏</title>
+  <link rel="stylesheet" href="./style.css?v=3">
+  <script src="./player.js?v=3" defer></script>
 </head>
 <body>
-  <header class="shell">
-    <div class="brand"><span class="brand-icon" aria-hidden="true"><i></i></span>杰杰的放映室</div>
-    <button id="share" class="secondary" hidden>复制分享链接</button>
-  </header>
-  <main class="shell">
-    <section class="hero">
-      <h1><span id="title">杰杰的</span><em>屏幕录像</em></h1>
-      <p id="byline">用分享者发来的完整链接，打开对应的录屏。</p>
-      <button id="heroPlay" class="primary" hidden>播放录屏<span aria-hidden="true">→</span></button>
-    </section>
-    <section class="display" aria-label="播放画面">
-      <div class="landscape" aria-hidden="true"><i></i><i></i><i></i></div>
-      <div class="window">
-        <div class="windowbar"><div class="lights" aria-hidden="true"><i></i><i></i><i></i></div><span>屏幕录像</span><time id="duration">—</time></div>
-        <div id="stage" class="stage">
-          <video id="video" preload="auto" playsinline referrerpolicy="no-referrer" hidden></video>
-          <button id="play" class="play" aria-label="播放录屏" hidden><i aria-hidden="true"></i></button>
-          <div id="state" class="state" role="status"><strong id="status">还没有打开录屏</strong><span id="message">观看地址包含这段录屏专属的分享信息。</span><button id="retry" class="secondary" hidden>重新加载</button></div>
-        </div>
+  <main id="viewer">
+    <div id="stage" class="stage" aria-label="录屏播放器">
+      <video id="video" preload="auto" playsinline hidden></video>
+      <button id="play" type="button" aria-label="播放录屏" hidden><i aria-hidden="true"></i></button>
+      <div id="state" role="status">
+        <strong id="status">请打开完整的录屏链接</strong>
+        <span id="message"></span>
+        <button id="retry" type="button" hidden>重新加载</button>
       </div>
-    </section>
-    <dl class="details" id="details" hidden>
-      <div><dt>录制时间</dt><dd id="recorded">—</dd></div>
-      <div><dt>画面尺寸</dt><dd id="size">—</dd></div>
-      <div><dt>链接到期</dt><dd id="expiry">—</dd></div>
-    </dl>
+    </div>
+    <div id="info" class="info" hidden>
+      <div id="timestamp" hidden><time id="recorded" aria-label="录制时间"></time><span class="zone">北京时间</span></div>
+      <button id="share" type="button" aria-label="复制分享链接">复制链接</button>
+    </div>
   </main>
-  <footer class="shell"><span>杰杰的放映室</span><span>由 Framecho 录制</span></footer>
 </body>
 </html>
