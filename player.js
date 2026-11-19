@@ -113,8 +113,8 @@ function init() {
 el('share').onclick = async () => {
   try {
     await navigator.clipboard.writeText(location.href);
-    el('share').textContent = '链接已复制 ✓';
-  } catch { el('share').textContent = '请复制浏览器地址栏链接'; }
+    el('shareLabel').textContent = '链接已复制 ✓';
+  } catch { el('shareLabel').textContent = '请复制浏览器地址栏链接'; }
 };
 window.addEventListener('hashchange', () => location.reload());
 document.addEventListener('visibilitychange', () => {
