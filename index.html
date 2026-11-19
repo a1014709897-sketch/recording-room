@@ -8,17 +8,17 @@
   <meta name="robots" content="noindex,nofollow,noarchive">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self'; media-src https://framecho-share-1455997977.cos.ap-guangzhou.myqcloud.com; img-src 'self' data:; base-uri 'none'; form-action 'none'">
   <title>录屏</title>
-  <link rel="stylesheet" href="./style.css?v=4">
-  <script src="./player.js?v=4" defer></script>
+  <link rel="stylesheet" href="./style.css?v=5">
+  <script src="./player.js?v=5" defer></script>
 </head>
 <body>
   <main id="viewer">
     <header id="info" hidden>
       <div>
-        <h1>屏幕录像</h1>
+        <h1 id="title">屏幕录像</h1>
         <div id="timestamp" hidden><time id="recorded" aria-label="录制时间"></time> 北京时间</div>
       </div>
-      <button id="share" type="button" aria-label="复制分享链接"><i aria-hidden="true"></i><span id="shareLabel" role="status">复制链接</span></button>
+      <button id="share" type="button" aria-label="复制名称、日期和录屏链接"><i aria-hidden="true"></i><span id="shareLabel" role="status">复制链接</span></button>
     </header>
     <div id="stage" class="stage" aria-label="录屏播放器">
       <video id="video" preload="auto" playsinline hidden></video>

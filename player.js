@@ -44,24 +44,46 @@ function captureInstant(path, zone, signedAt) {
   return candidates.filter(t => wallAt(t) === wall && t <= signedAt + 300000)
     .sort((a, b) => b - a)[0] ?? null;
 }
-function showRecordingTime(path, zone, signedAt) {
-  let instant;
-  try { instant = captureInstant(path, zone, signedAt); } catch { return; }
-  if (instant == null) return;
-  const formatted = new Intl.DateTimeFormat('zh-CN', {
-    timeZone: 'Asia/Shanghai', year: 'numeric', month: 'long', day: 'numeric',
-    hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
-  }).format(instant);
-  el('recorded').textContent = formatted;
-  el('recorded').dateTime = new Date(instant).toISOString();
+let displayTitle = '屏幕录像';
+let beijingTime = '';
+function setRecordingInfo(parameters, signedAt) {
+  const stem = decodeURIComponent(mediaURL.pathname.split('/').pop()).replace(/\.[^.]+$/, '');
+  const custom = parameters.get('n')?.replace(/[\u0000-\u001f\u007f]+/g, ' ').trim();
+  displayTitle = (custom || (/^Framecho_\d{4}-/.test(stem) ? '屏幕录像' : stem)).slice(0, 256);
+  el('title').textContent = displayTitle;
+  document.title = displayTitle;
+  const t = parameters.get('t');
+  const when = t && /^\d{1,10}$/.test(t) ? Number(t) * 1000 :
+    captureInstant(mediaURL.pathname, parameters.get('tz') || 'America/Los_Angeles', signedAt);
+  if (when == null || when > signedAt + 300000) return;
+  const parts = Object.fromEntries(new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23'
+  }).formatToParts(when).map(p => [p.type, p.value]));
+  beijingTime = parts.year+'-'+parts.month+'-'+parts.day+' '+parts.hour+':'+parts.minute+':'+parts.second;
+  el('recorded').textContent = beijingTime;
+  el('recorded').dateTime = new Date(when).toISOString();
   el('timestamp').hidden = false;
-  document.title = '录屏 · ' + formatted + ' 北京时间';
+}
+function signedURL(params) {
+  if (params.has('v')) return params.get('v');
+  const path = params.get('p'), id = params.get('k'), date = params.get('d');
+  if (!path || !id || !date) throw Error();
+  const url = new URL('https://' + expectedHost + '/framecho/' + path);
+  url.search = new URLSearchParams({
+    'X-Amz-Algorithm':'AWS4-HMAC-SHA256',
+    'X-Amz-Credential':id+'/'+date.slice(0,8)+'/ap-guangzhou/s3/aws4_request',
+    'X-Amz-Date':date, 'X-Amz-Expires':params.get('e'),
+    'X-Amz-SignedHeaders':'host', 'X-Amz-Signature':params.get('s')
+  });
+  return url.href;
 }
 function init() {
   if (!location.hash || location.hash === '#') return;
   try {
+    if (location.hash.length > 24000) throw Error();
     const parameters = new URLSearchParams(location.hash.slice(1));
-    const raw = parameters.get('v');
+    const raw = signedURL(parameters);
     if (!raw || raw.length > 12000) throw Error();
     mediaURL = new URL(raw);
     if (mediaURL.origin !== 'https://' + expectedHost || mediaURL.username || mediaURL.password ||
@@ -72,7 +94,7 @@ function init() {
     if (!date || !Number.isInteger(ttl) || ttl < 1 || ttl > 604800) throw Error();
     expires = Date.parse(date[1]+'-'+date[2]+'-'+date[3]+'T'+date[4]+':'+date[5]+':'+date[6]+'Z') + ttl*1000;
     if (!Number.isFinite(expires)) throw Error();
-    showRecordingTime(mediaURL.pathname, parameters.get('tz') || 'America/Los_Angeles', expires - ttl*1000);
+    setRecordingInfo(parameters, expires - ttl*1000);
   } catch {
     notice('分享链接不完整', '请重新复制分享者发来的完整链接。');
     return;
@@ -112,8 +134,8 @@ function init() {
 }
 el('share').onclick = async () => {
   try {
-    await navigator.clipboard.writeText(location.href);
-    el('shareLabel').textContent = '链接已复制 ✓';
+    await navigator.clipboard.writeText('名称: ' + displayTitle + '\n日期: ' + (beijingTime || '未知') + '\n录屏文件：' + location.href);
+    el('shareLabel').textContent = '已复制 ✓';
   } catch { el('shareLabel').textContent = '请复制浏览器地址栏链接'; }
 };
 window.addEventListener('hashchange', () => location.reload());
